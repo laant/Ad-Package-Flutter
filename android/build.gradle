@@ -66,3 +66,13 @@ android {
         }
     }
 }
+
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    def koin_version = "3.2.0"
+    implementation "io.insert-koin:koin-android:$koin_version"
+
+    implementation("androidx.appcompat:appcompat:1.6.1")
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    implementation 'com.google.android.gms:play-services-ads-identifier:18.0.1'
+}
