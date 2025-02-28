@@ -50,7 +50,7 @@ class _ActionScreenState extends State<ActionScreen> {
             OutlinedButton(
               onPressed: () async {
                 await showGoogleAdMobVideo(
-                    'usw', 'ca-app-pub-3934371243221515/6863023609');
+                    'usw', 'ca-app-pub-3940256099942544/5224354917');
               },
               child: const Text('Google Ad 테스트'),
             ),
@@ -60,7 +60,7 @@ class _ActionScreenState extends State<ActionScreen> {
             OutlinedButton(
               onPressed: () async {
                 await showGoogleAdMobVideo(
-                    'usw', 'ca-app-pub-3934371243221515/3671266941');
+                    'usw', 'ca-app-pub-3940256099942544/5224354917');
               },
               child: const Text('[iOS] Google Ad 테스트'),
             ),
