@@ -18,12 +18,8 @@ class Ad {
 
   Future<void> initGoogleAdMob() async {
     final List<String> _testDevices = [
-      "C7D2C570CD1BD5997B159AA62BD006C1",
-      "420fbca823697fba5723f543792e0001",
-      "F0F3DE456DA8EED6557343A80FCAA6F6",
-      "6803B83B27010C7F517608BFD122E056",
-      "9C773578446D3F52E99DCEEF66D524D5",
-      "81c8fd26f9fee909769a3a197487b3f5",
+      "a36f63cf9c064285bd224ddb93102dc7",
+      "a36f63cf-9c06-4285-bd22-4ddb93102dc7",
     ];
 
     if (kReleaseMode) {
