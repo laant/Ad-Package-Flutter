@@ -1,7 +1,8 @@
 import 'dart:async';
 
-import 'package:ad/ad.dart';
+import 'package:ad/ad.dart' as hn_ad;
 import 'package:flutter/material.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 class ActionScreen extends StatefulWidget {
   const ActionScreen({super.key});
@@ -11,13 +12,32 @@ class ActionScreen extends StatefulWidget {
 }
 
 class _ActionScreenState extends State<ActionScreen> {
-  late Ad _ad;
+  late hn_ad.Ad _ad;
+  bool adLoaded = false;
 
   @override
   void initState() {
     super.initState();
-    _ad = Ad();
+    _ad = hn_ad.Ad();
     initADHandler();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      _ad.todayBannerLoadAD(
+        'ca-app-pub-3940256099942544/9214589741',
+        AdManagerBannerAdListener(
+          onAdLoaded: (ad) {
+            setState(() {
+              adLoaded = true;
+            });
+            print('Ad loaded: $ad');
+          },
+          onAdFailedToLoad: (ad, error) {
+            print('Ad failed to load: $error');
+            ad.dispose();
+          },
+        ),
+      );
+    });
   }
 
   Future<void> initADHandler() async {
@@ -67,9 +87,33 @@ class _ActionScreenState extends State<ActionScreen> {
             const SizedBox(
               height: 40,
             ),
+            adLoaded
+                ? FullWidthBannerAd(
+                    bannerAd: _ad.todayTopBannerAd, sidePadding: 10.0)
+                : Container(),
           ],
         )),
       ),
     );
+  }
+}
+
+class FullWidthBannerAd extends StatelessWidget {
+  final AdManagerBannerAd? bannerAd;
+  final double sidePadding;
+
+  const FullWidthBannerAd(
+      {super.key, required this.bannerAd, this.sidePadding = 0});
+
+  @override
+  Widget build(BuildContext context) {
+    if (bannerAd != null) {
+      return SizedBox(
+          width: MediaQuery.of(context).size.width - sidePadding * 2,
+          height: bannerAd!.sizes.first.height.toDouble(),
+          child: AdWidget(ad: bannerAd!));
+    } else {
+      return const SizedBox(width: 0, height: 0);
+    }
   }
 }

@@ -12,6 +12,8 @@ class Ad {
   Ad._privateConstructor();
   static final Ad _instance = Ad._privateConstructor();
 
+  AdManagerBannerAd? todayTopBannerAd;
+
   factory Ad() {
     return _instance;
   }
@@ -157,6 +159,20 @@ class Ad {
       }
     }
     return errorCode;
+  }
+
+  void todayBannerLoadAD(String adUnitId, AdManagerBannerAdListener listener) {
+    todayTopBannerAd = _loadBannerAd(adUnitId, listener);
+  }
+
+  AdManagerBannerAd _loadBannerAd(
+      String adUnitId, AdManagerBannerAdListener listener) {
+    return AdManagerBannerAd(
+      adUnitId: adUnitId,
+      request: const AdManagerAdRequest(),
+      sizes: [AdSize.banner],
+      listener: listener,
+    )..load();
   }
 }
 

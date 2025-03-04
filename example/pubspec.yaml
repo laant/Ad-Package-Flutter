@@ -17,6 +17,8 @@ dependencies:
   flutter:
     sdk: flutter
 
+  google_mobile_ads: 5.1.0
+
   ad:
     # When depending on this package from a real application you should use:
     #   ad: ^x.y.z
