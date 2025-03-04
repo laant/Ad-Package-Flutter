@@ -13,6 +13,9 @@ class Ad {
   static final Ad _instance = Ad._privateConstructor();
 
   AdManagerBannerAd? todayTopBannerAd;
+  AdManagerBannerAd? marketBannerAd;
+  AdManagerBannerAd? myBannerAd;
+  AdManagerBannerAd? companyBannerAd;
 
   factory Ad() {
     return _instance;
@@ -163,6 +166,19 @@ class Ad {
 
   void todayBannerLoadAD(String adUnitId, AdManagerBannerAdListener listener) {
     todayTopBannerAd = _loadBannerAd(adUnitId, listener);
+  }
+
+  void marketBannerLoadAD(String adUnitId, AdManagerBannerAdListener listener) {
+    marketBannerAd = _loadBannerAd(adUnitId, listener);
+  }
+
+  void myBannerLoadAD(String adUnitId, AdManagerBannerAdListener listener) {
+    myBannerAd = _loadBannerAd(adUnitId, listener);
+  }
+
+  void companyBannerLoadAD(
+      String adUnitId, AdManagerBannerAdListener listener) {
+    companyBannerAd = _loadBannerAd(adUnitId, listener);
   }
 
   AdManagerBannerAd _loadBannerAd(
