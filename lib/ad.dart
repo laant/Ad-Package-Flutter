@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 typedef RewardedAdLoadResponseCallback = Function(String adResponseData);
+typedef GoogleAdLoadResponseCallback = Function(String adResponseData);
 typedef GoogleAdLoadCallback = void Function(bool isAdLoaded);
 
 class Ad {
@@ -170,25 +171,25 @@ class Ad {
       String type, String adUnitId, AdManagerBannerAdListener listener) {
     switch (type) {
       case 'today':
-        todayBannerAd = _loadBannerAd(adUnitId, listener);
+        todayBannerAd ??= _loadBannerAd(adUnitId, listener);
         break;
       case 'todayList':
-        todayListBannerAd = _loadBannerAd(adUnitId, listener);
+        todayListBannerAd ??= _loadBannerAd(adUnitId, listener);
         break;
       case 'market':
-        marketBannerAd = _loadBannerAd(adUnitId, listener);
+        marketBannerAd ??= _loadBannerAd(adUnitId, listener);
         break;
       case 'my':
-        myBannerAd = _loadBannerAd(adUnitId, listener);
+        myBannerAd ??= _loadBannerAd(adUnitId, listener);
         break;
       case 'news':
-        newsBannerAd = _loadBannerAd(adUnitId, listener);
+        newsBannerAd ??= _loadBannerAd(adUnitId, listener);
         break;
       case 'company':
-        companyBannerAd = _loadBannerAd(adUnitId, listener);
+        companyBannerAd ??= _loadBannerAd(adUnitId, listener);
         break;
       default:
-        todayBannerAd = _loadBannerAd(adUnitId, listener);
+        todayBannerAd ??= _loadBannerAd(adUnitId, listener);
         break;
     }
   }
@@ -201,6 +202,109 @@ class Ad {
       sizes: [AdSize.banner],
       listener: listener,
     )..load();
+  }
+
+  Future<void> showGoogleAdMobInterstitial(
+    String userId,
+    String adUnitId, {
+    GoogleAdLoadCallback? googleAdLoadCallback,
+    GoogleAdLoadResponseCallback? googleAdLoadResponseCallback,
+  }) async {
+    String code = '';
+    int startAt = 0;
+    int endAt = 0;
+    DateTime startDateTime = DateTime.now();
+    startAt = startDateTime.millisecondsSinceEpoch;
+    try {
+      // // _createInterstitialAd()
+      // InterstitialAd.load(
+      //   adUnitId: adUnitId,
+      //   request: const AdRequest(),
+      //   adLoadCallback: InterstitialAdLoadCallback(
+      //     onAdLoaded: (ad) => _interstitialAd = ad,
+      //     onAdFailedToLoad: (error) => _interstitialAd = null,
+      //   ),
+      // );
+      //
+      // // _showInterstitialAd()
+      // if (_interstitialAd != null) {
+      //   _interstitialAd!.fullScreenContentCallback = FullScreenContentCallback(
+      //     onAdDismissedFullScreenContent: (ad) {
+      //       ad.dispose();
+      //     },
+      //     onAdFailedToShowFullScreenContent: (ad, error) {
+      //       ad.dispose();
+      //       _createInterstitialAd();
+      //     },
+      //   );
+      //   _interstitialAd!.show();
+      //   _interstitialAd = null;
+      // }
+
+      RewardedAd.load(
+        adUnitId: adUnitId,
+        request: const AdRequest(),
+        rewardedAdLoadCallback: RewardedAdLoadCallback(
+          onAdLoaded: (ad) {
+            ServerSideVerificationOptions options =
+                ServerSideVerificationOptions(
+                    userId: userId, customData: '$startAt');
+            ad.setServerSideOptions(options);
+            googleAdLoadCallback?.call(true);
+            ad.fullScreenContentCallback = FullScreenContentCallback(
+              onAdDismissedFullScreenContent: (ad) {
+                ad.dispose();
+                if (code == 'SUCCESS') {
+                  // 광고 reward 지급 됬을 경우
+                  disposeGoogleAdInterstitial(code, startAt, endAt,
+                      googleAdLoadResponseCallback: (value) =>
+                          googleAdLoadResponseCallback?.call(value));
+                }
+              },
+              onAdFailedToShowFullScreenContent: (_, err) {
+                googleAdLoadCallback?.call(false);
+                code = parseErrorCode(err);
+                DateTime endDateTime = DateTime.now();
+                endAt = endDateTime.millisecondsSinceEpoch;
+                disposeGoogleAdInterstitial(code, startAt, endAt,
+                    googleAdLoadResponseCallback: (value) =>
+                        googleAdLoadResponseCallback?.call(value));
+                print(
+                    '[Ad] Failed to ShowFullScreenContent ad: ${err.message}');
+              },
+            );
+            ad.show(onUserEarnedReward: (_, reward) async {
+              code = 'SUCCESS';
+              DateTime endDateTime = DateTime.now();
+              endAt = endDateTime.millisecondsSinceEpoch;
+              print('[Ad] reward : ${reward.amount}');
+            });
+          },
+          onAdFailedToLoad: (err) {
+            googleAdLoadCallback?.call(false);
+            code = parseErrorCode(err);
+            DateTime endDateTime = DateTime.now();
+            endAt = endDateTime.millisecondsSinceEpoch;
+            disposeGoogleAdInterstitial(code, startAt, endAt,
+                googleAdLoadResponseCallback: (value) =>
+                    googleAdLoadResponseCallback?.call(value));
+            print('[Ad] Failed to load a rewarded ad: ${err.message}');
+          },
+        ),
+      );
+    } catch (e) {
+      print('[Ad] GoogleAdMobVideo: $e');
+    }
+  }
+
+  Future<void> disposeGoogleAdInterstitial(
+    String code,
+    int startAt,
+    int endAt, {
+    GoogleAdLoadResponseCallback? googleAdLoadResponseCallback,
+  }) async {
+    final jsonString = ADData.toJson(code, startAt, endAt);
+    googleAdLoadResponseCallback?.call(jsonString);
   }
 }
 
