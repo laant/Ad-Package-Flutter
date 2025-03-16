@@ -12,9 +12,11 @@ class Ad {
   Ad._privateConstructor();
   static final Ad _instance = Ad._privateConstructor();
 
-  AdManagerBannerAd? todayTopBannerAd;
+  AdManagerBannerAd? todayBannerAd;
+  AdManagerBannerAd? todayListBannerAd;
   AdManagerBannerAd? marketBannerAd;
   AdManagerBannerAd? myBannerAd;
+  AdManagerBannerAd? newsBannerAd;
   AdManagerBannerAd? companyBannerAd;
 
   factory Ad() {
@@ -164,21 +166,31 @@ class Ad {
     return errorCode;
   }
 
-  void todayBannerLoadAD(String adUnitId, AdManagerBannerAdListener listener) {
-    todayTopBannerAd = _loadBannerAd(adUnitId, listener);
-  }
-
-  void marketBannerLoadAD(String adUnitId, AdManagerBannerAdListener listener) {
-    marketBannerAd = _loadBannerAd(adUnitId, listener);
-  }
-
-  void myBannerLoadAD(String adUnitId, AdManagerBannerAdListener listener) {
-    myBannerAd = _loadBannerAd(adUnitId, listener);
-  }
-
-  void companyBannerLoadAD(
-      String adUnitId, AdManagerBannerAdListener listener) {
-    companyBannerAd = _loadBannerAd(adUnitId, listener);
+  void bannerLoadAD(
+      String type, String adUnitId, AdManagerBannerAdListener listener) {
+    switch (type) {
+      case 'today':
+        todayBannerAd = _loadBannerAd(adUnitId, listener);
+        break;
+      case 'todayList':
+        todayListBannerAd = _loadBannerAd(adUnitId, listener);
+        break;
+      case 'market':
+        marketBannerAd = _loadBannerAd(adUnitId, listener);
+        break;
+      case 'my':
+        myBannerAd = _loadBannerAd(adUnitId, listener);
+        break;
+      case 'news':
+        newsBannerAd = _loadBannerAd(adUnitId, listener);
+        break;
+      case 'company':
+        companyBannerAd = _loadBannerAd(adUnitId, listener);
+        break;
+      default:
+        todayBannerAd = _loadBannerAd(adUnitId, listener);
+        break;
+    }
   }
 
   AdManagerBannerAd _loadBannerAd(

@@ -22,7 +22,8 @@ class _ActionScreenState extends State<ActionScreen> {
     initADHandler();
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      _ad.todayBannerLoadAD(
+      _ad.bannerLoadAD(
+        'today',
         'ca-app-pub-3940256099942544/9214589741',
         AdManagerBannerAdListener(
           onAdLoaded: (ad) {
@@ -89,7 +90,7 @@ class _ActionScreenState extends State<ActionScreen> {
             ),
             adLoaded
                 ? FullWidthBannerAd(
-                    bannerAd: _ad.todayTopBannerAd, sidePadding: 10.0)
+                    bannerAd: _ad.todayBannerAd, sidePadding: 10.0)
                 : Container(),
           ],
         )),
