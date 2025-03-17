@@ -206,33 +206,41 @@ class Ad {
     )..load();
   }
 
-  void _createInterstitialAd(String adUnitId) {
+  void _createInterstitialAd(String adUnitId, VoidCallback? callBack) {
     InterstitialAd.load(
       adUnitId: adUnitId,
       request: const AdRequest(),
       adLoadCallback: InterstitialAdLoadCallback(
-        onAdLoaded: (ad) => _interstitialAd = ad,
-        onAdFailedToLoad: (error) => _interstitialAd = null,
+        onAdLoaded: (ad) {
+          _interstitialAd = ad;
+          callBack?.call();
+        },
+        onAdFailedToLoad: (error) {
+          _interstitialAd = null;
+        },
       ),
     );
   }
 
-  Future<void> createGoogleAdMobInterstitial(String adUnitId) async {
+  Future<void> createGoogleAdMobInterstitial(
+      String adUnitId, VoidCallback? callBack) async {
     try {
-      _createInterstitialAd(adUnitId);
+      _createInterstitialAd(adUnitId, callBack);
     } catch (e) {
       print('[Ad] createGoogleAdMobInterstitial: $e');
     }
   }
 
-  void _showInterstitialAd() {
+  void _showInterstitialAd(VoidCallback? callBack) {
     if (_interstitialAd != null) {
       _interstitialAd!.fullScreenContentCallback = FullScreenContentCallback(
         onAdDismissedFullScreenContent: (ad) {
           ad.dispose();
+          callBack?.call();
         },
         onAdFailedToShowFullScreenContent: (ad, error) {
           ad.dispose();
+          callBack?.call();
         },
       );
       _interstitialAd!.show();
@@ -240,9 +248,9 @@ class Ad {
     }
   }
 
-  Future<void> showGoogleAdMobInterstitial() async {
+  Future<void> showGoogleAdMobInterstitial(VoidCallback? callBack) async {
     try {
-      _showInterstitialAd();
+      _showInterstitialAd(callBack);
     } catch (e) {
       print('[Ad] showGoogleAdMobInterstitial: $e');
     }
